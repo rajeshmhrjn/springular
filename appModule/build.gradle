@@ -1,0 +1,58 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'application'
+}
+
+mainClassName= "com.rm.springular.SpringularApplication"
+
+group 'com.rm'
+version '0.0.1-SNAPSHOT'
+
+targetCompatibility = '11'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
+
+bootRun{
+    systemProperties = System.properties
+}
+
+
+task deleteWebDist(type: Delete){
+    delete "../appModule/src/main/resources/static"
+
+    doLast{
+        logger.lifecycle ":$name = cleaned up ../appModlue/src/main/resources/static"
+    }
+}
+
+task copyStaticWeb(type: Copy){
+    dependsOn 'deleteWebDist'
+    into '../appModule/src/main/resources/static'
+    from '../webModule/dist/webModule'
+    eachFile { logger.info it.name}
+    doLast {
+        logger.lifecycle "$name completed the task copying the web static files"
+    }
+}
+
+jar.dependsOn copyStaticWeb
+
+task buildProd{
+    dependsOn 'build'
+}

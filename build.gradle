@@ -1,0 +1,9 @@
+import groovy.*
+
+evaluationDependsOnChildren()
+
+Project webModule = project('web-module')
+Project appModule = project('app-module')
+
+appModule.tasks['build'].mustRunAfter(webModule.tasks['build'])
+appModule.tasks['buildProd'].mustRunAfter(webModule.tasks['buildProd'])
